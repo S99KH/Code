@@ -1,0 +1,1270 @@
+/* ============================================================    
+   បន្ថែមថ្មី៖ មុខងារជួយឱ្យអូសរលូន សន្សំសំចៃ GPU 0.5 និង RAM 0.5 
+   ============================================================ */
+html, body {
+    overscroll-behavior-y: none; /* បញ្ឈប់ការទាញរលាក់នៅចុងអេក្រង់ */
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch; /* ជួយឱ្យអូសរលូនលើ iPhone/iPad */
+}
+
+/* បង្ខំឱ្យ Browser ប្រើ GPU គណនាការ Render រូបភាព ជៀសវាងការគាំង (Jank) */
+img {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    /* content-visibility: auto; ជួយមិនឱ្យស៊ី RAM ច្រើនពេក ទោះទាញរូបទុកមុនក៏ដោយ */
+    content-visibility: auto; 
+}
+
+/* ============================================================    
+   ផ្នែកកែសម្រួលអក្សរខ្មែរឱ្យស្អាត (Professional Look)    
+   ============================================================ */    
+    
+/* កំណត់ Font ខ្មែរឱ្យបង្ហាញគ្រប់កន្លែង លើកលែងតែ Icon */    
+:not(i):not([class*="fa-"]):not([class*="icon"]):not(.material-icons):not(.swiper-button-next):not(.swiper-button-prev) {    
+    font-family: 'Kantumruy Pro', 'Hanuman', 'Koh Santepheap', sans-serif !important;    
+    -webkit-font-smoothing: antialiased;    
+    -moz-osx-font-smoothing: grayscale;    
+}    
+    
+/* កំណត់សម្រាប់ Input និង Button ឱ្យស្អាតដូចគ្នា */    
+input, button, select, textarea {    
+    font-family: 'Kantumruy Pro', 'Hanuman', sans-serif !important;    
+}    
+    
+/* រក្សាលក្ខណៈដើមរបស់ Icon មិនឱ្យប្តូរជា Font ខ្មែរ */    
+i, [class*="fa-"], [class*="icon-"], .fas, .far, .fab, .fa-solid {    
+    font-family: "Font Awesome 6 Free", "Font Awesome 5 Free", "FontAwesome" !important;    
+    font-style: normal !important;    
+    font-weight: 900 !important;    
+}    
+
+/* ============================================================    
+   កូដថ្មីដែលបានបញ្ចូល (Merge តាមសំណើ) - កែសម្រួល Border Radius ឱ្យស្អាត
+   ============================================================ */    
+
+.khmer-card-v2 {    
+    background: #fff;    
+    border-radius: 12px !important;    
+    overflow: hidden;    
+    box-shadow: 0 4px 10px rgba(0,0,0,0.06), 0 10px 25px rgba(0,0,0,0.08);    
+    /* ជំនួស all ដោយ properties ជាក់លាក់ដើម្បីសន្សំសំចៃ GPU/RAM */
+    -webkit-transition: transform .25s ease, box-shadow .25s ease !important;
+    transition: transform .25s ease, box-shadow .25s ease !important;    
+    padding: 6px;    
+    display: flex;    
+    flex-direction: column;    
+    justify-content: space-between;    
+    height: 100%;    
+    text-decoration: none;    
+    color: #444;    
+    box-sizing: border-box;    
+    position: relative;    
+    border: 1px solid #f0f0f0;    
+    will-change: transform, box-shadow;
+}    
+    
+/* Hover ឱ្យឡើងទន់ៗ */    
+.khmer-card-v2:hover {    
+    -webkit-transform: translateY(-2px) !important;
+    transform: translateY(-2px) !important;    
+    box-shadow: 0 6px 14px rgba(0,0,0,0.08), 0 14px 30px rgba(0,0,0,0.12) !important;    
+}    
+    
+/* បន្ថែម CSS សម្រាប់ផ្នែកតម្លៃឱ្យមើលទៅ Professional */      
+.khmer-price-wrapper {      
+    margin: 8px 0;      
+    display: flex;      
+    flex-direction: column;      
+    gap: 4px;      
+}      
+    
+/* តម្លៃដើមលើរូបភាព */    
+.khmer-old-price-overlay-v2 {    
+    position: absolute;    
+    bottom: 10px;    
+    left: 8px;    
+    background: rgba(0, 0, 0, 0.5);     
+    color: #ffffff;    
+    text-decoration: line-through;    
+    font-size: 11px;    
+    padding: 2px 6px;    
+    border-radius: 4px;    
+    z-index: 2;    
+    display: flex;    
+    align-items: center;    
+    gap: 3px;    
+}    
+    
+/* Fix title មិនឱ្យមានចន្លោះធំ */    
+.khmer-card-v2 h4 {    
+    margin-top: 8px !important;    
+    margin-bottom: 8px !important;    
+    line-height: 22px !important;    
+    min-height: auto !important;    
+    height: auto !important;    
+    display: block !important;    
+    overflow: hidden;    
+    word-break: break-word;    
+    font-size: 11px;    
+    text-align: center;    
+    font-family: 'Hanuman', serif;    
+    font-weight: bold;    
+    color: #333;    
+}    
+    
+/* ស្ទាយសម្រាប់ប្រអប់ ចុះសល់ % ពណ៌ទឹកក្រូចដូចរូបភាព */    
+.khmer-dis-badge-v2 {    
+    background: #ff765e !important;    
+    color: white;    
+    padding: 3px 8px !important;    
+    border-radius: 4px;    
+    font-size: 12px !important;    
+    font-weight: bold;    
+    display: inline-block;    
+    font-family: 'Kantumruy Pro', sans-serif;    
+}
+
+/* ============================================================    
+   កូដដើមរបស់អ្នក (រក្សាទុក និងសម្របសម្រួល)    
+   ============================================================ */    
+.khmer-video-section-wrapper-v2 {    
+  width: 100%;    
+  background-color: #ffffff;     
+  padding: 0;     
+  display: flex;    
+  flex-direction: column;    
+  align-items: center;    
+  box-sizing: border-box;    
+  margin-top: 0px;    
+  font-family: 'Kantumruy Pro', 'Hanuman', sans-serif;    
+}    
+.khmer-video-wrapper-v2 {    
+  width: 100%;    
+  display: flex;    
+  flex-direction: column;    
+  align-items: center;    
+}    
+.khmer-tit-all-custom-v2 {     
+  max-width: 100% !important;     
+  width: 100%;     
+  margin: 0;     
+  background: #ffffff;     
+  border-bottom: none;     
+  display: flex;     
+  justify-content: space-between;     
+  align-items: center;     
+  padding: 10px 10px 0 10px;    
+  border-radius: 0;     
+  box-sizing: border-box;    
+}    
+.khmer-header-tit-custom-v2 {     
+  background: #e74c3c;     
+  color: #fff;     
+  padding: 8px 15px 8px 25px;     
+  position: relative;     
+  border-radius: 5px 15px 0 0;     
+  font-family: 'Hanuman', serif;     
+  white-space: nowrap;    
+}    
+.khmer-header-tit-custom-v2 h4 { margin: 0; font-size: 13px; font-weight: bold; font-family: 'Hanuman', serif; }    
+.khmer-header-tit-custom-v2::before {     
+  content: "";     
+  position: absolute;     
+  left: 0; top: 0; width: 8px; height: 100%;     
+  background: #ffcc00;     
+  border-radius: 5px 0 0 0;     
+}    
+    
+.khmer-menu-label-v2 { display: flex; gap: 6px; margin-bottom: 5px; }    
+    
+.khmer-btn-v2 {     
+  padding: 6px 14px;     
+  border-radius: 20px;     
+  border: 1px solid #f0f0f0;     
+  background: #f8f8f8;     
+  color: #444;     
+  font-size: 11px;     
+  cursor: pointer;     
+  font-weight: bold;     
+  /* ជំនួស all ដោយ properties ជាក់លាក់ */
+  -webkit-transition: background-color 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s, transform 0.3s;    
+  font-family: 'Kantumruy Pro', sans-serif;     
+  white-space: nowrap;    
+  display: flex;    
+  align-items: center;    
+  gap: 8px;     
+  position: relative;    
+  z-index: 10;    
+  will-change: transform, background-color;
+}    
+    
+.khmer-btn-v2 img {    
+  width: 16px;     
+  height: 16px;    
+  object-fit: contain;    
+}    
+    
+.khmer-btn-v2.active {     
+  background: #e74c3c;     
+  color: #fff;     
+  border-color: #e74c3c;     
+  box-shadow: 0 2px 5px rgba(231, 76, 60, 0.3);    
+}    
+.khmer-btn-v2.active img {    
+  filter: brightness(0) invert(1);     
+  -webkit-filter: brightness(0) invert(1);
+}    
+    
+/* --- ការកែសម្រួល Grid តាមសំណើ --- */    
+#khmer-video-grid-v2-1 {     
+  display: grid;     
+  grid-template-columns: repeat(5, 1fr);     
+  gap: 12px;     
+  padding: 8px;     
+  max-width: 100% !important;     
+  width: 100%;     
+  min-height: 100px;     
+  margin: 0;    
+  background: #ffffff;     
+  box-sizing: border-box;    
+  border-radius: 0;     
+}    
+    
+/* ទូរសព្ទ: ១ជួរ ២រូប (បង្ហាញម្ដង 6 រូប) */    
+@media (max-width: 599px) {     
+  #khmer-video-grid-v2-1 {     
+    grid-template-columns: repeat(2, 1fr) !important;     
+    gap: 12px;     
+    padding: 8px 8px;    
+  }     
+  .chin-product-name { font-size: 11px !important; }    
+  .chin-product-price { font-size: 14px !important; }    
+  .chin-old-price { font-size: 10px !important; }     
+  .chin-header-tit-custom h4 { font-size: 12px !important; }    
+}    
+    
+/* iPad/Tablet: ១ជួរ ៤រូប (បង្ហាញម្ដង 8 រូប) */    
+@media (min-width: 600px) and (max-width: 1024px) {     
+  #khmer-video-grid-v2-1 {     
+    grid-template-columns: repeat(4, 1fr) !important;     
+    gap: 12px;     
+  }     
+  .chin-product-name { font-size: 11.5px !important; }    
+  .chin-header-tit-custom h4 { font-size: 13.5px !important; }    
+}    
+
+.khmer-img-wrap-v2 {     
+  position: relative;     
+  width: 100%;     
+  padding-bottom: 100%;     
+  height: 0;     
+  overflow: hidden;     
+  border-radius: 4px; /* កែឱ្យស៊ីគ្នាជាមួយ Card */    
+  background: #f5f5f5;    
+}    
+    
+.khmer-img-wrap-v2 img {     
+  position: absolute;     
+  top: 0; left: 0; width: 100%; height: 100%;     
+  object-fit: cover;    
+}    
+    
+.khmer-badge-container-v2 {    
+  position: absolute;    
+  top: 6px;    
+  left: 6px;    
+  display: flex;    
+  flex-direction: column;    
+  gap: 4px;    
+  z-index: 10;    
+}    
+.khmer-cat-badge-v2 {    
+  background: rgba(0, 77, 197, 0.85);     
+  color: #fff;    
+  padding: 2px 8px;    
+  font-size: 9px;    
+  font-weight: bold;    
+  border-radius: 4px;    
+  text-transform: uppercase;    
+  font-family: 'Kantumruy Pro', sans-serif;    
+}    
+
+.khmer-old-price-v2 {    
+  font-size: 10px;    
+  color: #999;    
+  text-decoration: line-through;    
+  text-align: center;    
+  display: block;    
+  font-family: 'Kantumruy Pro', sans-serif;    
+}    
+    
+.khmer-load-more-container-v2 {     
+  background: #ffffff;     
+  max-width: 100% !important;     
+  width: 100%;     
+  margin: 15px;     
+  padding: 5px 0 20px 0;     
+  text-align: center;     
+  border-radius: 0;    
+  box-sizing: border-box;    
+}    
+.khmer-load-more-btn-v2 {     
+  background: #fff; color: #e74c3c; border: 1.5px solid #e74c3c;     
+  padding: 10px 60px; border-radius: 50px; font-weight: bold;     
+  cursor: pointer; font-size: 14px; font-family: 'Kantumruy Pro', sans-serif;    
+}    
+    
+/* កែសម្រួលប៊ូតុងបញ្ជាទិញឱ្យមើលទៅ Pro */    
+.khmer-buy-btn-v2, .chin-buy-btn-slider, .chin-buy-btn {     
+  width: 100%;     
+  background: linear-gradient(135deg, #ff5722, #e74c3c);    
+  color: #fff !important;     
+  border: none;     
+  padding: 10px 0;     
+  border-radius: 8px;     
+  font-weight: 700;     
+  cursor: pointer;     
+  font-size: 11px;     
+  margin-top: auto;    
+  position: relative;    
+  overflow: hidden;    
+  /* ជំនួស all ឱ្យស្រាលម៉ាស៊ីនទូរសព្ទ */
+  -webkit-transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;    
+  box-shadow: 0 4px 10px rgba(231, 76, 60, 0.35);     
+  text-transform: uppercase;    
+  display: flex;             
+  align-items: center;    
+  justify-content: center;     
+  gap: 6px;    
+  text-decoration: none;    
+  font-family: "Kantumruy Pro", sans-serif;    
+  will-change: transform, box-shadow;
+}    
+    
+.khmer-buy-btn-v2:hover, .chin-buy-btn-slider:hover, .chin-buy-btn:hover {     
+  background: linear-gradient(135deg, #e64a19, #c62828);     
+  -webkit-transform: translateY(-2px);
+  transform: translateY(-2px);     
+  box-shadow: 0 6px 16px rgba(231, 76, 60, 0.45);     
+}    
+.khmer-buy-btn-v2:active, .chin-buy-btn-slider:active, .chin-buy-btn:active { 
+  -webkit-transform: scale(0.96);
+  transform: scale(0.96); 
+}    
+    
+.swiper-slide, .swiper-wrapper, .swiper-container, .swiper {    
+  pointer-events: auto !important;    
+  touch-action: pan-y !important;    
+}    
+    
+.swiper-slide button, .khmer-btn-v2 * {    
+  pointer-events: auto !important;    
+  touch-action: manipulation !important;    
+  -webkit-tap-highlight-color: rgba(0,0,0,0.1);    
+  user-select: none;    
+}    
+    
+.swiper-button-prev, .swiper-button-next {    
+  position: absolute !important;    
+  top: 50% !important;    
+  -webkit-transform: translateY(-50%) !important;
+  transform: translateY(-50%) !important;    
+  width: 44px !important;    
+  height: 44px !important;    
+  background: rgba(255,255,255,0.95) !important;    
+  border-radius: 50% !important;    
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25) !important;    
+  z-index: 30 !important;    
+  display: flex !important;    
+  align-items: center !important;    
+  justify-content: center !important;    
+  cursor: pointer !important;    
+  color: #e74c3c !important;    
+  opacity: 1 !important;    
+  visibility: visible !important;    
+}    
+    
+.swiper-button-prev { left: 8px !important; }    
+.swiper-button-next { right: 8px !important; }    
+    
+.chin-main-product-wrapper {    
+  width: 100%;    
+  background-color: #f1f1f1;    
+  padding: 0;     
+  box-sizing: border-box;    
+  padding-bottom: 80px;     
+}    
+    
+.chin-product-section {     
+  width: 100%;     
+  max-width: 100% !important;     
+  margin: 0;     
+  border: none;     
+  border-radius: 0;     
+  overflow: hidden;     
+  background: #fff;     
+  font-family: 'Kantumruy Pro', 'Hanuman', serif;     
+  box-sizing: border-box;    
+}    
+    
+/* ============================================================
+   🚀 កែសម្រួលផ្នែក Promo (Flash Sale Countdown) ឱ្យស្អាតបែប Professional 
+   ============================================================ */    
+.chin-section-top {     
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center;     
+  border-bottom: 2px solid #e74c3c; 
+  padding: 10px 12px; 
+  background: linear-gradient(90deg, #ffffff 0%, #fff9f8 100%); /* ផ្ទៃខាងក្រោយបែប Premium */
+  position: relative;
+  box-shadow: 0 4px 15px rgba(231,76,60,0.05); /* បន្ថែមស្រមោលតិចៗ */
+}    
+/* ខ្សែបន្ទាត់ពណ៌ក្រហមបញ្ឈរខាងឆ្វេង ដើម្បីមើលទៅ Pro */
+.chin-section-top::before {
+  content: ""; 
+  position: absolute; 
+  left: 0; 
+  top: 0; 
+  height: 100%; 
+  width: 4px; 
+  background: #e74c3c;
+}
+
+.chin-section-header {     
+  background: transparent; 
+  padding: 2px 10px; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  z-index: 2;
+}    
+    
+.chin-promo-countdown {    
+  display: flex;    
+  gap: 4px;    
+  align-items: center;  
+  background: #ffebe8; /* ផ្ទៃទ្រនាប់ប្រអប់នាឡិកាឱ្យមើលទៅលេចធ្លោ */
+  padding: 4px 10px;
+  border-radius: 30px; /* រាងទ្រវែងមូល (Pill shape) */
+  border: 1px solid rgba(231, 76, 60, 0.2);
+}
+
+/* 🚀 ដោះស្រាយបញ្ហាអក្សរខ្មែរ: ដកពាក្យ "បញ្ចប់ក្នុង" ចេញពី content ហើយប្តូរមកប្រើ class .chin-promo-label វិញ */
+.chin-promo-label {
+  font-family: 'Kantumruy Pro', sans-serif;
+  font-size: 10px;
+  color: #e74c3c;
+  font-weight: 800;
+  margin-right: 2px;
+}
+    
+.chin-countdown-item {    
+  background: linear-gradient(135deg, #e74c3c, #c0392b); /* ប្តូរពីពណ៌ខ្មៅ ទៅជាក្រហម Premium */   
+  color: #fff;    
+  padding: 4px 0;    
+  border-radius: 6px;    
+  font-size: 11.5px;    
+  font-weight: 900;    
+  min-width: 24px;    
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(231,76,60,0.4); /* ស្រមោលប្រអប់លេខ */
+  font-family: 'Montserrat', sans-serif; /* ប្រើ Font លេខដែលស្អាតបំផុត */
+}    
+    
+.chin-countdown-sep {    
+  font-weight: bold;    
+  color: #e74c3c;    
+  font-size: 13px;
+  -webkit-animation: chin-blink-sep 1s infinite;
+  animation: chin-blink-sep 1s infinite; /* Effect លោតភ្លឹបភ្លែត */
+  will-change: opacity;
+}
+@-webkit-keyframes chin-blink-sep {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.2; }
+}
+@keyframes chin-blink-sep {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.2; }
+}
+
+@media (max-width: 400px) {
+  .chin-promo-label { display: none; } /* លាក់អក្សរចេញបើទូរស័ព្ទតូចពេក */
+  .chin-promo-countdown { padding: 4px 6px; }
+}
+/* ============================================================ */
+    
+    
+/* រៀបចំគម្លាត Swiper សងខាងកុំឱ្យជាប់គ្នាពេក */
+#chin-swiper-mix .swiper-slide {
+    padding: 0 6px !important; 
+    margin: 0 !important;
+    box-sizing: border-box;
+}
+
+.chin-swiper { 
+    width: 100%; 
+    padding: 10px 5px; 
+    box-sizing: border-box; 
+}    
+
+/* រួមបញ្ចូល .chin-product-card ជាកូដតែមួយ កុំឱ្យជាន់គ្នា */
+.chin-product-card {    
+    background: #fff; 
+    border-radius: 12px; 
+    padding: 6px;    
+    text-align: left; 
+    position: relative; 
+    border: 1px solid #eee;    
+    height: 100%; 
+    display: flex; 
+    flex-direction: column; 
+    box-sizing: border-box;    
+    -webkit-transition: transform 0.3s, box-shadow 0.3s; /* Optimization កុំប្រើ all */
+    transition: transform 0.3s, box-shadow 0.3s; 
+    will-change: transform, box-shadow;
+    
+    /* គម្លាតខាងក្រោម និងស្រមោលដើម */
+    margin: 0 0 10px 0 !important; 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08); 
+}    
+
+/* Effect ពេលដាក់ម៉ៅស៍ពីលើ (Hover) */
+.chin-product-card:hover { 
+    -webkit-transform: translateY(-3px);
+    transform: translateY(-3px); 
+    box-shadow: 0 6px 16px rgba(0,0,0,0.15); 
+}
+
+    
+    
+    
+.chin-img-container {    
+    position: relative;    
+    width: 100%;    
+    padding-bottom: 100%;     
+    overflow: hidden;    
+    border-radius: 8px;    
+    background: #f5f5f5;    
+    border: 1px solid #eee;    
+}    
+.chin-img-container img {    
+    position: absolute;    
+    top: 0; left: 0;    
+    width: 100%; height: 100%;    
+    object-fit: cover;    
+}    
+    
+.chin-badge-container-s, .chin-badge-container {    
+    position: absolute;    
+    top: 6px;    
+    left: 6px;    
+    display: flex;    
+    flex-direction: column;    
+    gap: 4px;     
+    z-index: 10;    
+}    
+    
+.chin-cat-badge-s, .chin-category-badge {    
+    background: rgba(0, 77, 197, 0.85);     
+    color: #fff;    
+    padding: 2px 8px;    
+    font-size: 9px;    
+    font-weight: bold;    
+    border-radius: 4px;    
+    text-transform: uppercase;    
+    text-align: center;    
+    display: inline-block;    
+    font-family: 'Kantumruy Pro', sans-serif;    
+}    
+    
+.chin-dis-badge-s, .chin-discount-badge {    
+    background: linear-gradient(45deg, #e74c3c, #ff5722);     
+    color: #fff;    
+    padding: 2px 7px;    
+    font-size: 10px;    
+    font-weight: bold;    
+    border-radius: 4px;    
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);    
+    text-align: center;    
+    display: inline-block;    
+    border: 1px solid rgba(255,255,255,0.3);    
+    -webkit-animation: chin-pulse 2s infinite;
+    animation: chin-pulse 2s infinite;    
+    font-family: 'Kantumruy Pro', sans-serif;  
+    will-change: transform;
+    transform: translateZ(0);  
+}    
+    
+@-webkit-keyframes chin-pulse {    
+    0% { -webkit-transform: scale(1) translateZ(0); }    
+    50% { -webkit-transform: scale(1.05) translateZ(0); }    
+    100% { -webkit-transform: scale(1) translateZ(0); }    
+}
+@keyframes chin-pulse {    
+    0% { transform: scale(1) translateZ(0); }    
+    50% { transform: scale(1.05) translateZ(0); }    
+    100% { transform: scale(1) translateZ(0); }    
+}    
+    
+.chin-product-name {     
+  font-size: 11px; font-weight: bold; color: #444; height: 32px;     
+  overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2;     
+  -webkit-box-orient: vertical; margin: 8px 0; text-decoration: none; line-height: 1.5; text-align: center;    
+  font-family: 'Hanuman', serif;    
+}    
+    
+.chin-price-wrapper-s, .chin-price-container {     
+    text-align: center;     
+    margin-bottom: 6px;     
+    min-height: 36px;     
+    display: flex;     
+    flex-direction: column;     
+    justify-content: center;     
+    gap: 1px;    
+}    
+.chin-price-now, .chin-product-price {     
+    color: #e74c3c;     
+    font-size: 14px;     
+    font-weight: bold;     
+    margin: 0;     
+    display: block;     
+    font-family: 'Kantumruy Pro', sans-serif;    
+}    
+.chin-price-old-s, .chin-old-price {     
+    color: #999;     
+    text-decoration: line-through;     
+    font-size: 10px;     
+    margin-bottom: 1px;     
+    display: block;     
+    font-family: 'Kantumruy Pro', sans-serif;    
+}    
+    
+.chin-buy-btn-slider {    
+  padding: 10px 0;     
+  font-size: 11px;    
+  position: relative;    
+  overflow: hidden;    
+  font-family: 'Kantumruy Pro', sans-serif;    
+}    
+    
+.chin-buy-ripple {    
+  position: absolute;    
+  top: 50%;    
+  left: 50%;    
+  width: 20px;    
+  height: 20px;    
+  background: rgba(255, 255, 255, 0.6);    
+  border-radius: 50%;    
+  -webkit-transform: translate(-50%, -50%) scale(0);
+  transform: translate(-50%, -50%) scale(0);    
+  -webkit-animation: chin-ripple-effect 1.2s ease-out forwards;
+  animation: chin-ripple-effect 1.2s ease-out forwards;    
+  pointer-events: none;    
+  z-index: 2;    
+  will-change: transform, opacity;
+}    
+    
+@-webkit-keyframes chin-ripple-effect {    
+  to {    
+    -webkit-transform: translate(-50%, -50%) scale(6);    
+    opacity: 0;    
+  }    
+}
+@keyframes chin-ripple-effect {    
+  to {    
+    transform: translate(-50%, -50%) scale(6);    
+    opacity: 0;    
+  }    
+}    
+    
+.chin-buy-confetti {    
+  position: absolute;    
+  top: -10px;    
+  font-size: 18px;    
+  -webkit-animation: chin-confetti-fall 1.8s linear forwards;
+  animation: chin-confetti-fall 1.8s linear forwards;    
+  z-index: 3;    
+  pointer-events: none;    
+  will-change: transform, opacity;
+}    
+    
+@-webkit-keyframes chin-confetti-fall {    
+  0% { -webkit-transform: translateY(0) rotate(0deg); opacity: 1; }    
+  100% { -webkit-transform: translateY(80px) rotate(720deg); opacity: 0; }    
+}
+@keyframes chin-confetti-fall {    
+  0% { transform: translateY(0) rotate(0deg); opacity: 1; }    
+  100% { transform: translateY(80px) rotate(720deg); opacity: 0; }    
+}    
+    
+.chin-map-header {    
+    display: flex;    
+    justify-content: space-between;    
+    align-items: center;    
+    padding: 12px;    
+    background: #f8f9fa;    
+    border: 1px solid #eee;    
+    border-radius: 8px;    
+    cursor: pointer;    
+    margin-top: 10px;    
+    -webkit-transition: background-color 0.3s, border-color 0.3s;
+    transition: background-color 0.3s, border-color 0.3s;    
+    font-family: 'Kantumruy Pro', sans-serif;    
+}    
+    
+.chin-map-header.chin-active {    
+    background: #fff1f0;    
+    border-color: #ff4d4f;    
+}    
+    
+.chin-map-header span { font-size: 12.5px; font-weight: bold; }    
+    
+.chin-map-content {    
+    max-height: 0;    
+    overflow: hidden;    
+    -webkit-transition: max-height 0.4s ease-out;
+    transition: max-height 0.4s ease-out;    
+    margin-top: 5px;    
+}    
+    
+.chin-map-content.chin-show {    
+    max-height: 250px;     
+}    
+    
+.chin-popup {     
+    display: none;     
+    position: fixed;     
+    top: 0;     
+    left: 0;     
+    width: 100%;     
+    height: 100%;     
+    background: rgba(0,0,0,0.8);     
+    z-index: 10000;     
+    align-items: center;     
+    justify-content: center;     
+    -webkit-backdrop-filter: blur(4px);     
+    backdrop-filter: blur(4px);    
+}    
+    
+.chin-popup-content-large {     
+    background: #fff;    
+    width: 96%;     
+    max-width: 480px;     
+    position: fixed;     
+    top: 50%;    
+    left: 50%;    
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);     
+    max-height: 90vh;     
+    font-family: 'Kantumruy Pro', 'Hanuman', serif;     
+    display: flex;     
+    flex-direction: column;    
+    border-radius: 20px;    
+    overflow: hidden;    
+    margin: 0 auto;    
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);    
+}    
+    
+.chin-s41-header-pro-v2 {     
+    position: relative;     
+    width: 100%;     
+    height: 115px; 
+    background: linear-gradient(135deg, #e74c3c, #c0392b);     
+    display: flex;     
+    align-items: center;     
+    justify-content: center;     
+    text-align: center;     
+    flex-shrink: 0;     
+}    
+    
+.chin-popup-body-content-v2 {
+    background: #fff;
+    position: relative;
+    z-index: 5;
+    
+    /* 1. បិទការរត់ Scroll ធ្លាយទៅក្រៅ និងបើក Scroll ធម្មតា */
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain !important; /* ផ្លាស់ប្តូរពី none មក contain ដើម្បីទប់ទល់នឹង parent scroll */
+
+    /* 2. ការពារកុំឱ្យ Flexbox បង្ខំឱ្យរួញទំហំ (ដោះស្រាយបញ្ហាម្តងធំម្តងតូច) */
+    flex: 1 0 auto; 
+    width: 100%;
+    
+    /* 3. ប្រើប្រាស់ dvh (Dynamic Viewport Height) ការពារការប្រែប្រួលពេលរបារ URL របស់ Browser លោតឡើងចុះ */
+    max-height: 70dvh; /* ឬកំណត់តាមទំហំជាក់ស្តែងដែលអ្នកចង់បាន */
+
+    /* 4. បន្ថែម Hardware Acceleration ការពារការញ័រ ឬលោតបាត់ៗ (Flickering) */
+    transform: translateZ(0);
+    will-change: scroll-position;
+}
+  
+    
+.chin-s41-header-bg-glow { 
+    position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; 
+    background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(231, 76, 60, 0) 70%); 
+    -webkit-animation: chin-glowRotate 8s linear infinite; 
+    animation: chin-glowRotate 8s linear infinite; 
+    will-change: transform;
+    transform: translateZ(0);
+}    
+@-webkit-keyframes chin-glowRotate { from { -webkit-transform: rotate(0deg) translateZ(0); } to { -webkit-transform: rotate(360deg) translateZ(0); } }
+@keyframes chin-glowRotate { from { transform: rotate(0deg) translateZ(0); } to { transform: rotate(360deg) translateZ(0); } }    
+.chin-s41-header-overlay { 
+    position: relative; 
+    z-index: 2; 
+    width: 100%; 
+    padding: 0 20px; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center;
+    height: 100%;
+}    
+.chin-s41-header-top-bar { display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 5px; }    
+.chin-s41-status-dot { 
+    width: 8px; height: 8px; background: #2ecc71; border-radius: 50%; 
+    box-shadow: 0 0 8px #2ecc71; 
+    -webkit-animation: chin-blink 1.5s infinite; 
+    animation: chin-blink 1.5s infinite; 
+    will-change: opacity;
+}    
+@-webkit-keyframes chin-blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+@keyframes chin-blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }    
+.chin-s41-badge-live { color: rgba(255,255,255,0.9); font-size: 10px; font-weight: bold; letter-spacing: 1.5px; text-transform: uppercase; font-family: 'Kantumruy Pro', sans-serif; }    
+.chin-close-btn-v2 { position: absolute; right: 15px; top: 15px; font-size: 28px; color: #fff; cursor: pointer; opacity: 0.8; -webkit-transition: transform 0.3s, opacity 0.3s; transition: transform 0.3s, opacity 0.3s; z-index: 10; }    
+.chin-close-btn-v2:hover { opacity: 1; -webkit-transform: scale(1.1); transform: scale(1.1); }    
+    
+.chin-cart-list-container {    
+    margin: 8px 0;    
+    background: #fff9f8;    
+    border: 1px dashed #e74c3c;    
+    border-radius: 12px;    
+    padding: 10px;    
+    width: 100%;    
+    box-sizing: border-box;    
+}    
+.chin-cart-title {    
+    font-size: 12px;    
+    color: #e74c3c;    
+    font-weight: bold;    
+    margin-bottom: 8px;    
+    display: flex;    
+    align-items: center;    
+    gap: 6px;    
+    font-family: 'Kantumruy Pro', sans-serif;    
+}    
+.chin-cart-item {    
+    display: flex;    
+    align-items: center;    
+    gap: 8px;    
+    background: #fff;    
+    padding: 6px 10px;    
+    border-radius: 8px;    
+    margin-bottom: 6px;    
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);    
+    border: 1px solid #f0f0f0;    
+}    
+.chin-cart-item img {    
+    width: 40px;    
+    height: 40px;    
+    border-radius: 6px;    
+    object-fit: cover;    
+}    
+.chin-cart-item-info {    
+    flex: 1;    
+    display: flex;    
+    flex-direction: column;    
+    justify-content: center;    
+}    
+.chin-cart-item-name {    
+    font-size: 10.5px;    
+    font-weight: bold;    
+    color: #444;     
+    display: block;    
+    line-height: 1.3;    
+    margin-bottom: 2px;    
+    font-family: 'Hanuman', serif;    
+}    
+.chin-cart-item-price {    
+    font-size: 10px;    
+    color: #e74c3c;    
+    font-weight: bold;    
+    font-family: 'Kantumruy Pro', sans-serif;    
+}    
+    
+.chin-qty-controls {    
+    display: flex;    
+    align-items: center;    
+    gap: 6px;    
+    background: #f8f9fa;    
+    border-radius: 15px;    
+    padding: 3px 8px;    
+    border: 1px solid #eee;    
+    height: fit-content;    
+}    
+.chin-qty-btn {    
+    width: 20px;    
+    height: 20px;    
+    border-radius: 50%;    
+    border: none;    
+    background: #e74c3c;    
+    color: #fff;    
+    font-size: 14px;    
+    font-weight: bold;    
+    cursor: pointer;    
+    display: flex;    
+    align-items: center;    
+    justify-content: center;    
+    -webkit-transition: transform 0.2s;
+    transition: transform 0.2s;    
+}    
+.chin-qty-btn:active { -webkit-transform: scale(0.9); transform: scale(0.9); }    
+.chin-qty-num {    
+    font-size: 11px;    
+    font-weight: bold;    
+    color: #333;    
+    min-width: 15px;    
+    text-align: center;    
+    font-family: 'Kantumruy Pro', sans-serif;    
+}    
+.chin-remove-item {    
+    color: #ddd;    
+    cursor: pointer;    
+    font-size: 14px;    
+    padding: 0 4px;    
+    margin-left: 2px;    
+    -webkit-transition: color 0.3s;
+    transition: color 0.3s;    
+}    
+.chin-remove-item:hover { color: #e74c3c; }    
+    
+.chin-form-prompt-text {    
+    text-align: center;    
+    margin: 15px 0 20px 0;    
+    font-family: 'Hanuman', serif;    
+    font-weight: bold;    
+    color: #555;    
+    font-size: 13.5px;    
+    display: flex;    
+    align-items: center;    
+    justify-content: center;    
+    gap: 8px;    
+    position: relative;    
+}    
+    
+.chin-form-prompt-text::before, .chin-form-prompt-text::after {    
+    content: "";    
+    flex: 1;    
+    height: 1.5px;    
+    background: linear-gradient(to right, transparent, #e74c3c, transparent);    
+    opacity: 0.3;    
+}    
+    
+.chin-form-prompt-text i {    
+    color: #e74c3c;    
+    font-size: 16px;    
+    -webkit-animation: chin-bounce 2s infinite;
+    animation: chin-bounce 2s infinite;    
+    will-change: transform;
+}    
+    
+@-webkit-keyframes chin-bounce {    
+    0%, 20%, 50%, 80%, 100% {-webkit-transform: translateY(0);}    
+    40% {-webkit-transform: translateY(-5px);}    
+    60% {-webkit-transform: translateY(-3px);}    
+}
+@keyframes chin-bounce {    
+    0%, 20%, 50%, 80%, 100% {transform: translateY(0);}    
+    40% {transform: translateY(-5px);}    
+    60% {transform: translateY(-3px);}    
+}    
+    
+.chin-s41-custom-input-wrapper {    
+  display: flex;    
+  align-items: center;    
+  background: #fdfdfd;     
+  border: 1.5px solid #eee;     
+  border-radius: 12px;    
+  margin-bottom: 12px;    
+  overflow: hidden;    
+  -webkit-transition: border-color 0.3s, background-color 0.3s, box-shadow 0.3s;
+  transition: border-color 0.3s, background-color 0.3s, box-shadow 0.3s;    
+  width: 100%;    
+  box-sizing: border-box;    
+}    
+    
+.chin-s41-custom-input-wrapper.chin-has-btn { margin-bottom: 5px; }    
+.chin-s41-custom-input-wrapper:focus-within { border-color: #e74c3c; background: #fff; box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1); }    
+.chin-s41-icon-box { background: #f8f9fa; padding: 12px 14px; display: flex; align-items: center; justify-content: center; color: #e74c3c; font-size: 16px; border-right: 1px solid #eee; flex-shrink: 0; }    
+    
+.chin-s41-custom-input-wrapper input {    
+  flex: 1;    
+  border: none !important;     
+  outline: none !important;     
+  background: transparent !important;    
+  padding: 12px 14px !important;    
+  margin: 0 !important;    
+  font-size: 14px !important;    
+  color: #333 !important;    
+  font-family: 'Kantumruy Pro', 'Hanuman', serif !important;    
+  box-sizing: border-box;    
+  width: 100%;    
+}    
+    
+.chin-get-location-btn {    
+  background: #f0f0f0;    
+  color: #e74c3c;    
+  border: none;    
+  padding: 6px 12px;    
+  font-size: 11px;    
+  font-weight: bold;    
+  border-radius: 20px;    
+  cursor: pointer;    
+  display: flex;    
+  align-items: center;    
+  gap: 5px;    
+  margin: 0 auto 15px auto;     
+  -webkit-transition: transform 0.2s, background-color 0.2s, color 0.2s;
+  transition: transform 0.2s, background-color 0.2s, color 0.2s;    
+  width: fit-content;    
+  font-family: 'Kantumruy Pro', sans-serif;    
+}    
+.chin-get-location-btn:active { -webkit-transform: scale(0.95); transform: scale(0.95); background: #e74c3c; color: #fff; }    
+.chin-get-location-btn i { font-size: 12px; }    
+    
+.chin-shop-section-wrapper { width: 100%; background-color: #f1f1f1; padding: 0; display: flex; flex-direction: column; align-items: center; box-sizing: border-box; }    
+
+.chin-shop-wrapper { 
+    width: 100%; display: flex; flex-direction: column; align-items: center; 
+}    
+    
+.chin-tit-all-custom {     
+  max-width: 100% !important;     
+  width: 100%;     
+  margin: 0;     
+  background: #ffffff;     
+  border-bottom: 3px solid transparent;     
+  border-image: linear-gradient(90deg, #e74c3c, #ffcc00, #2ecc71, #e74c3c);    
+  border-image-slice: 1;    
+  display: flex;     
+  justify-content: space-between;     
+  align-items: center;     
+  padding: 0 10px;     
+  height: 52px;     
+  border-radius: 0;     
+  box-sizing: border-box;     
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);    
+}    
+.chin-header-tit-custom {     
+  background: linear-gradient(-45deg, #e74c3c, #c0392b, #e74c3c, #ff5722);     
+  background-size: 300% 300%;     
+  -webkit-animation: chin-gradientBG 5s ease infinite;
+  animation: chin-gradientBG 5s ease infinite;     
+  color: #fff;     
+  padding: 0 18px;     
+  height: 100%;     
+  display: flex;    
+  align-items: center;    
+  position: relative;     
+  border-radius: 4px 20px 0 0;     
+  font-family: 'Hanuman', serif;     
+  overflow: hidden;     
+  box-shadow: 2px 0 8px rgba(0,0,0,0.15);     
+  flex-shrink: 0;     
+  will-change: background-position;
+  transform: translateZ(0);
+}    
+.chin-header-tit-custom::after { content: "🔥"; margin-left: 8px; font-size: 16px; }    
+@-webkit-keyframes chin-gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+@keyframes chin-gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }    
+.chin-header-tit-custom h4 { margin: 0; font-size: 14.5px; font-weight: bold; position: relative; z-index: 1; letter-spacing: 0.5px; font-family: 'Hanuman', serif;}    
+    
+.chin-menu-label { display: flex; gap: 8px; margin-left: auto; align-items: center; height: 100%; }    
+.chin-menu-label button {     
+  padding: 7px 14px; border-radius: 12px; border: 1.5px solid #eee; background: #fff; color: #555;     
+  font-size: 11px; cursor: pointer; font-weight: bold; 
+  /* Optimization កុំប្រើ all */
+  -webkit-transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s, color 0.3s, box-shadow 0.3s; 
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s, color 0.3s, box-shadow 0.3s;     
+  font-family: 'Kantumruy Pro', sans-serif; white-space: nowrap; display: flex; align-items: center; justify-content: center;    
+}    
+.chin-menu-label button.chin-active { background: #e74c3c; color: #fff; border-color: #e74c3c; box-shadow: 0 4px 10px rgba(231, 76, 60, 0.25); -webkit-transform: translateY(-2px); transform: translateY(-2px); }    
+    
+@media (max-width: 599px) {    
+  .chin-tit-all-custom { height: 46px; padding: 0 8px; }    
+  .chin-header-tit-custom { padding: 0 15px; border-radius: 4px 15px 0 0; }    
+  .chin-header-tit-custom h4 { font-size: 12.5px; }    
+  .chin-menu-label { gap: 4px; }    
+  .chin-menu-label button { padding: 5px 10px; font-size: 10px; border-radius: 8px; }    
+}    
+    
+.chin-product-grid {     
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; padding: 15px; width: 100%; min-height: 150px; margin: 0; background: #ffffff; box-sizing: border-box;     
+}    
+@media (max-width: 599px) { .chin-product-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 12px; padding: 12px; } }    
+@media (min-width: 600px) and (max-width: 1024px) { .chin-product-grid { grid-template-columns: repeat(4, 1fr) !important; gap: 12px; } }    
+    
+.chin-card { 
+  background: #fff; padding: 6px; border-radius: 12px; border: 1px solid #eee; display: flex; flex-direction: column; justify-content: space-between; height: 100%; 
+  -webkit-transition: transform 0.3s, box-shadow 0.3s; 
+  transition: transform 0.3s, box-shadow 0.3s; 
+  box-sizing: border-box; position: relative; 
+  will-change: transform, box-shadow;
+}    
+.chin-img-wrap { position: relative; width: 100%; padding-bottom: 100%; height: 0; overflow: hidden; border-radius: 8px; background: #f5f5f5; }    
+.chin-card img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;}    
+.chin-card h4 { font-size: 11px; margin: 8px 0 4px; height: 32px; overflow: hidden; line-height: 1.5; text-align: center; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; font-family: 'Hanuman', serif; color: #444;}    
+    
+.chin-load-more-container { background: #ffffff; width: 100%; padding: 15px 0 25px 0; text-align: center; box-sizing: border-box; }    
+.chin-load-more-btn { background: transparent; color: #e74c3c; border: 2px solid #e74c3c; padding: 10px 60px; border-radius: 50px; font-weight: bold; cursor: pointer; font-size: 14px; font-family: 'Kantumruy Pro', sans-serif; }    
+    
+.chin-bank-select { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 15px 0; }    
+.chin-bank-item { position: relative; border: 1.5px solid #eee; border-radius: 15px; padding: 15px 5px; text-align: center; cursor: pointer; -webkit-transition: border-color 0.3s ease, background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease; transition: border-color 0.3s ease, background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; overflow: hidden; }    
+.chin-bank-item .chin-select-tag { position: absolute; top: 0; left: 50%; -webkit-transform: translateX(-50%) translateY(-100%); transform: translateX(-50%) translateY(-100%); background: #e74c3c; color: white; font-size: 8px; padding: 2px 8px; border-radius: 0 0 8px 8px; -webkit-transition: transform 0.3s; transition: transform 0.3s; font-weight: bold; font-family: 'Kantumruy Pro', sans-serif; white-space: nowrap; }    
+.chin-bank-item.chin-active { border-color: #e74c3c; background: #fff9f8; box-shadow: 0 8px 20px rgba(231, 76, 60, 0.15); -webkit-transform: translateY(-3px); transform: translateY(-3px); }    
+.chin-bank-item.chin-active .chin-select-tag { -webkit-transform: translateX(-50%) translateY(0); transform: translateX(-50%) translateY(0); }    
+.chin-bank-item img { width: 40px; height: 40px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05)); -webkit-filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05)); }    
+.chin-bank-item span { font-size: 11px; font-weight: 800; color: #555; font-family: 'Montserrat', sans-serif; }    
+.chin-bank-item.chin-active span { color: #e74c3c; }    
+    
+.chin-qr-box-main { display: flex; flex-direction: column; align-items: center; padding: 15px 10px; margin: 15px 0; background: #ffffff; border-radius: 25px; border: 1px solid #f0f0f0; box-shadow: inset 0 0 20px rgba(0,0,0,0.02); position: relative; }    
+.chin-qr-image-wrapper { position: relative; padding: 10px; background: #fff; border-radius: 18px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border: 1px solid #eee; margin-bottom: 20px; width: 90%; max-width: 320px; box-sizing: border-box; display: flex; justify-content: center; align-items: center; }    
+#chin-qrImage { width: 100%; height: auto; aspect-ratio: 1/1; display: block; object-fit: contain; border-radius: 8px; }    
+.chin-qr-actions-container { display: flex; gap: 12px; width: 100%; justify-content: center; padding: 0 10px; }    
+.chin-qr-dl-btn, .chin-bank-redirect-btn { flex: 1; height: 48px; border: none; color: #fff; border-radius: 12px; font-weight: bold; text-decoration: none; font-size: 13px; display: flex !important; align-items: center; justify-content: center; gap: 10px; cursor: pointer; -webkit-transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.3s, box-shadow 0.3s; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.3s, box-shadow 0.3s; font-family: 'Kantumruy Pro', sans-serif; box-shadow: 0 6px 15px rgba(0,0,0,0.1); margin: 0 !important; }    
+.chin-qr-dl-btn { background: #34495e; }    
+.chin-qr-dl-btn:hover { background: #2c3e50; -webkit-transform: translateY(-3px); transform: translateY(-3px); box-shadow: 0 8px 20px rgba(52, 73, 94, 0.3); }    
+.chin-bank-redirect-btn { background: #92c83e; }    
+.chin-bank-redirect-btn:hover { background: #7fb135; -webkit-transform: translateY(-3px); transform: translateY(-3px); box-shadow: 0 8px 20px rgba(146, 200, 62, 0.3); }    
+.chin-telegram-btn { background: #229ED9; color: #fff; height: 48px; border: none; border-radius: 12px; font-weight: bold; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; -webkit-transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.3s, box-shadow 0.3s; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.3s, box-shadow 0.3s; font-family: 'Kantumruy Pro', sans-serif; box-shadow: 0 6px 15px rgba(0,0,0,0.1); margin-top: 12px; width: 100%; }    
+.chin-telegram-btn:hover { background: #1a8ac4; -webkit-transform: translateY(-3px); transform: translateY(-3px); box-shadow: 0 8px 20px rgba(34, 158, 217, 0.4); }    
+    
+.chin-shipping-active { border-color: #e74c3c !important; background-color: #fff2f1 !important; }    
+.chin-no-more-posts-wrapper { grid-column: 1 / -1; display: flex; align-items: center; justify-content: center; padding: 30px 0; width: 100%; }    
+.chin-no-more-posts-content { display: flex; align-items: center; gap: 15px; color: #999; font-family: 'Kantumruy Pro', sans-serif; font-size: 12px; }    
+.chin-no-more-posts-line { height: 1px; width: 60px; background: linear-gradient(to right, transparent, #ddd, transparent); }    
+    
+.chin-sticky-cart-bar { position: fixed; bottom: 80px; left: 50%; -webkit-transform: translateX(-50%); transform: translateX(-50%); width: 90%; max-width: 400px; background: #1a1a1a; height: 65px; border-radius: 40px; display: none; align-items: center; justify-content: space-between; padding: 0 10px 0 20px; z-index: 9999; box-shadow: 0 10px 25px rgba(0,0,0,0.3); font-family: 'Hanuman', serif; }    
+.chin-cart-info-left { display: flex; align-items: center; gap: 15px; color: #fff; }    
+.chin-cart-icon-wrapper { position: relative; }    
+.chin-cart-icon-wrapper i { font-size: 24px; color: #ff5722; }    
+.chin-cart-badge-count { position: absolute; top: -8px; right: -10px; background: #ff5722; color: white; font-size: 10px; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #1a1a1a; font-weight: bold; }    
+.chin-cart-text-details { display: flex; flex-direction: column; }    
+.chin-cart-label { font-size: 12px; color: #ccc; font-family: 'Kantumruy Pro', sans-serif; }    
+.chin-cart-total-amount { font-size: 16px; font-weight: bold; font-family: 'Kantumruy Pro', sans-serif; }    
+.chin-cart-order-btn { background: #ff5722; color: #fff; border: none; padding: 0 25px; height: 45px; border-radius: 30px; font-weight: bold; font-size: 14px; cursor: pointer; -webkit-transition: transform 0.3s; transition: transform 0.3s; font-family: 'Kantumruy Pro', sans-serif; }    
+.chin-cart-order-btn:active { -webkit-transform: scale(0.95); transform: scale(0.95); }    
+    
+.chin-total-box-wrapper { background: #ffffff; border-radius: 15px; padding: 15px; margin: 15px 0; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #f0f0f0; width: 100%; box-sizing: border-box; }    
+.chin-sub-info-row { display: flex; justify-content: space-between; margin-bottom: 12px; padding: 0 5px; }    
+.chin-sub-info-item { display: flex; flex-direction: column; }    
+.chin-sub-info-label { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; font-family: 'Kantumruy Pro', sans-serif; }    
+.chin-sub-info-value { font-size: 13px; font-weight: bold; color: #333; font-family: 'Kantumruy Pro', sans-serif; }    
+    
+.chin-price-row-modern { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; margin-bottom: 10px; border-radius: 12px; position: relative; overflow: hidden; -webkit-transition: background-color 0.3s; transition: background-color 0.3s; }    
+.chin-price-row-modern::after { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; }    
+.chin-row-riel { background: linear-gradient(90deg, #fff5f4 0%, #ffffff 100%); border: 1px solid #ffe5e2; }    
+.chin-row-riel::after { background: #e74c3c; }    
+.chin-row-usd { background: linear-gradient(90deg, #f1f8f2 0%, #ffffff 100%); border: 1px solid #e0f0e2; margin-bottom: 5px; }    
+.chin-row-usd::after { background: #2e7d32; }    
+    
+.chin-payment-notice-text { display: block; text-align: center; font-size: 10.5px; color: #666; font-family: 'Hanuman', serif; line-height: 1.5; padding: 5px 10px; background: #fdfdfd; border-radius: 8px; margin-top: 5px; font-weight: 500; }    
+.chin-label-col { display: flex; flex-direction: column; }    
+.chin-label-main { font-size: 13px; font-weight: 700; color: #333; font-family: 'Kantumruy Pro', sans-serif; }    
+.chin-label-sub { font-size: 10px; color: #999; font-style: italic; font-family: 'Kantumruy Pro', sans-serif; }    
+.chin-value-riel { font-size: 18px; font-weight: 800; color: #e74c3c; display: flex; align-items: center; gap: 4px; font-family: 'Kantumruy Pro', sans-serif; }    
+.chin-value-usd { font-size: 18px; font-weight: 800; color: #2e7d32; display: flex; align-items: center; gap: 4px; font-family: 'Kantumruy Pro', sans-serif; }    
+.chin-value-riel::before { content: "🇰🇭"; font-size: 14px; }    
+.chin-value-usd::before { content: "💵"; font-size: 14px; }    
+    
+#chin-chatButtonsBox { display: flex; gap: 8px; margin-top: 15px; margin-bottom: 25px; width: 100%; }    
+.chin-final-order-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px 5px; border-radius: 12px; font-size: 11px; gap: 5px; border: none; color: #fff; cursor: pointer; font-family: 'Kantumruy Pro', sans-serif; -webkit-transition: transform 0.3s, box-shadow 0.3s; transition: transform 0.3s, box-shadow 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }    
+.chin-final-order-btn i { font-size: 18px; }    
+.btn-wa { background: #25D366; }    
+.btn-tg { background: #229ED9; }    
+.btn-fb { background: #0084FF; }    
+    
+.chin-payment-title-divider { display: flex; align-items: center; text-align: center; margin: 20px 0 10px 0; width: 100%; }    
+.chin-payment-title-divider::before, .chin-payment-title-divider::after { content: ''; flex: 1; border-bottom: 1.5px solid #eee; }    
+.chin-payment-title-divider:not(:empty)::before { margin-right: 15px; }    
+.chin-payment-title-divider:not(:empty)::after { margin-left: 15px; }    
+.chin-payment-title-text { font-size: 13.5px; font-weight: 800; color: #e74c3c; background: #fff; padding: 0 5px; font-family: 'Hanuman', serif; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.3px; }    
+    
+.chin-total-payment-header { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 20px 0 15px 0; width: 100%; }    
+.chin-total-payment-header span { font-family: 'Hanuman', serif; font-size: 14px; font-weight: 900; color: #333; text-transform: uppercase; letter-spacing: 0.5px; }    
+.chin-total-payment-header::before, .chin-total-payment-header::after { content: ""; flex: 1; height: 1px; background: linear-gradient(to right, transparent, #e74c3c, transparent); opacity: 0.4; }    
+    
+.chin-shipping-section { margin: 20px 0; font-family: 'Hanuman', serif; text-align: center; }    
+.chin-shipping-title { font-size: 13.5px; margin-bottom: 12px; color: #e74c3c; font-weight: 900; display: flex; align-items: center; justify-content: center; gap: 8px; text-transform: uppercase; position: relative; }    
+.chin-shipping-title::before, .chin-shipping-title::after { content: ""; flex: 1; height: 1.5px; background: linear-gradient(to right, transparent, #e74c3c, transparent); opacity: 0.3; }    
+.chin-shipping-options { display: flex; gap: 12px; justify-content: center; max-width: 400px; margin: 0 auto; }    
+.chin-shipping-label { flex: 1; border: 1.5px solid #eee; padding: 10px 5px; border-radius: 12px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; font-size: 11px; background: #fff; -webkit-transition: border-color 0.3s, background-color 0.3s, box-shadow 0.3s; transition: border-color 0.3s, background-color 0.3s, box-shadow 0.3s; position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.03); }    
+.chin-shipping-label i { font-size: 18px; color: #999; -webkit-transition: color 0.3s, transform 0.3s; transition: color 0.3s, transform 0.3s; }    
+.chin-shipping-label span { font-weight: bold; color: #555; }    
+.chin-shipping-label.chin-active { border-color: #e74c3c; background: #fff9f8; box-shadow: 0 4px 12px rgba(231, 76, 60, 0.1); }    
+.chin-shipping-label.chin-active i { color: #e74c3c; -webkit-transform: scale(1.1); transform: scale(1.1); }    
+.chin-shipping-label.chin-active span { color: #e74c3c; }    
+.chin-shipping-label input[type="radio"] { position: absolute; opacity: 0; cursor: pointer; }    
+
+
+/* ============================================================
+   រូបភាព Header ជំនួសអក្សរ (Image Headers Mode) - កែថ្មីតាមសំណើ
+   ============================================================ */
+.chin-header-img-custom {
+    height: 40px; 
+    width: auto; 
+    max-width: 160px; 
+    object-fit: contain; 
+    position: relative;
+    z-index: 5;
+    display: block;
+    margin: 0; 
+}
+
+.chin-promo-img-custom {
+    height: 45px; 
+    width: auto;
+    max-width: 200px;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
+}
+
+.chin-popup-img-custom {
+    height: 50px; 
+    width: 100%;
+    max-width: 280px; 
+    object-fit: contain;
+    position: relative;
+    z-index: 10;
+    margin: 2px auto;
+    display: block; 
+}
+
+/* ស្ទាយអក្សរតូចក្រោមរូប ព័ត៌មានកុម្មង់ */
+.chin-s41-sub-text {
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 11.5px;
+    font-family: 'Hanuman', serif;
+    margin-top: 2px;
+    z-index: 10;
+    position: relative;
+    letter-spacing: 0.2px;
+}
+
+/* លាក់ Icon ភ្លើងចាស់ពេលប្រើមុខងាររូបភាព */
+.chin-header-tit-custom.chin-img-mode::after {
+    display: none !important;
+}
+.chin-header-tit-custom.chin-img-mode {
+    padding: 0 12px; 
+    display: flex;
+    align-items: center; 
+}
